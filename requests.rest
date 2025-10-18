@@ -1,0 +1,87 @@
+### Local Routes
+GET http://localhost:3000/
+###
+GET http://localhost:3000/api/quests
+###
+GET http://localhost:3000/api/quests/{{id}}
+
+###
+POST http://localhost:3000/api/quests
+Content-Type: application/json
+
+{
+  "title": "Run 3 miles",
+  "description": "Evening run at the track",
+  "difficulty": "medium",
+  "category": "health",
+  "rewardXp": 50,
+  "isDaily": true,
+  "dueDate": "2025-10-20T18:00:00.000Z"
+}
+
+###
+@id=
+
+###
+PUT http://localhost:3000/api/quests/{{id}}
+Content-Type: application/json
+
+{
+  "title": "Morning Yoga",
+  "description": "Stretch for 20 minutes",
+  "difficulty": "easy",
+  "category": "health",
+  "rewardXp": 25,
+  "isDaily": true,
+  "dueDate": "2025-10-21T08:00:00.000Z"
+}
+
+###
+DELETE http://localhost:3000/api/quests/{{id}}
+
+###
+GET http://localhost:3000/api-docs/
+
+
+### Render Routes
+GET https://questlog-api.onrender.com/
+###
+GET https://questlog-api.onrender.com/api/quests
+###
+GET https://questlog-api.onrender.com/api/quests/{{id}}
+
+###
+POST https://questlog-api.onrender.com/api/quests
+Content-Type: application/json
+
+{
+  "title": "Run 3 miles",
+  "description": "Evening run at the track",
+  "difficulty": "medium",
+  "category": "health",
+  "rewardXp": 50,
+  "isDaily": true,
+  "dueDate": "2025-10-20T18:00:00.000Z"
+}
+
+###
+PUT https://questlog-api.onrender.com/api/quests/{{id}}
+Content-Type: application/json
+
+{
+  "title": "Morning Yoga",
+  "description": "Stretch for 20 minutes",
+  "difficulty": "easy",
+  "category": "health",
+  "rewardXp": 25,
+  "isDaily": true,
+  "dueDate": "2025-10-21T08:00:00.000Z"
+}
+
+###
+DELETE https://questlog-api.onrender.com/api/quests/{{id}}
+
+###
+GET https://questlog-api.onrender.com/api-docs/
+
+###node src/index.js
