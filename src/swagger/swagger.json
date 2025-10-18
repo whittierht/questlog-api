@@ -1,0 +1,55 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "QuestLog API", "version": "1.0.0" },
+  "servers": [{ "url": "http://localhost:3000" }],
+  "tags": [{ "name": "Quests", "description": "Manage quests" }],
+  "paths": {
+    "/api/quests": {
+      "get": { "tags": ["Quests"], "summary": "List quests", "responses": { "200": { "description": "OK" } } },
+      "post": {
+        "tags": ["Quests"], "summary": "Create quest",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/QuestCreate" } } }
+        },
+        "responses": { "201": { "description": "Created" } }
+      }
+    },
+    "/api/quests/{id}": {
+      "get": {
+        "tags": ["Quests"], "summary": "Get quest by id",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Quests"], "summary": "Update quest",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/QuestUpdate" } } } },
+        "responses": { "200": { "description": "OK" } }
+      },
+      "delete": {
+        "tags": ["Quests"], "summary": "Delete quest",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Deleted" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "QuestCreate": {
+        "type": "object",
+        "required": ["title","description","difficulty","category","rewardXp","isDaily"],
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "difficulty": { "type": "string", "enum": ["easy","medium","hard"] },
+          "category": { "type": "string" },
+          "rewardXp": { "type": "integer", "minimum": 1 },
+          "isDaily": { "type": "boolean" },
+          "dueDate": { "type": "string", "format": "date-time" }
+        }
+      },
+      "QuestUpdate": { "type": "object", "properties": { "$ref": "#/components/schemas/QuestCreate/properties" } }
+    }
+  }
+}
