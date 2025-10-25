@@ -10,31 +10,32 @@ POST http://localhost:3000/api/quests
 Content-Type: application/json
 
 {
-  "title": "Run 3 miles",
-  "description": "Evening run at the track",
-  "difficulty": "medium",
+  "title": "Brush Teeth",
+  "description": "Keep those white and clean!",
+  "difficulty": "easy",
   "category": "health",
-  "rewardXp": 50,
+  "rewardXp": 1000,
   "isDaily": true,
-  "dueDate": "2025-10-20T18:00:00.000Z"
+  "dueDate": "2025-10-24T22:00:00.000Z"
 }
 
 ###
-@id=68f2f3b558a70ec565eddbd6
+@id=68f2f3a658a70ec565eddbd5
 
 ###
 PUT http://localhost:3000/api/quests/{{id}}
 Content-Type: application/json
 
 {
-  "title": "Morning Yoga",
-  "description": "Stretch for 20 minutes",
+  "title": "Brush Teeth",
+  "description": "Keep those white and clean!",
   "difficulty": "easy",
   "category": "health",
-  "rewardXp": 25,
+  "rewardXp": 100,
   "isDaily": true,
-  "dueDate": "2025-10-21T08:00:00.000Z"
+  "dueDate": "2025-10-24T22:00:00.000Z"
 }
+
 
 ###
 DELETE http://localhost:3000/api/quests/{{id}}
