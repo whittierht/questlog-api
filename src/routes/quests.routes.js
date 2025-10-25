@@ -1,14 +1,20 @@
 import { Router } from "express";
 import { body, param, validationResult } from "express-validator";
 import {
-  listQuests, createQuest, getQuestById, updateQuest, deleteQuest
+  listQuests,
+  createQuest,
+  getQuestById,
+  updateQuest,
+  deleteQuest
 } from "../controllers/quests.controller.js";
 
 const r = Router();
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   next();
 };
 
@@ -16,13 +22,16 @@ const validate = (req, res, next) => {
 
 r.get("/", listQuests);
 
-r.get("/:id",
+
+r.get(
+  "/:id",
   param("id").isMongoId(),
   validate,
   getQuestById
 );
 
-r.post("/",
+r.post(
+  "/",
   body("title").isString().trim().notEmpty(),
   body("description").isString().trim().notEmpty(),
   body("difficulty").isIn(["easy", "medium", "hard"]),
@@ -34,11 +43,12 @@ r.post("/",
   createQuest
 );
 
-r.put("/:id",
+r.put(
+  "/:id",
   param("id").isMongoId(),
   body("title").optional().isString().trim().notEmpty(),
   body("description").optional().isString().trim().notEmpty(),
-  body("difficulty").optional().isIn(["easy","medium","hard"]),
+  body("difficulty").optional().isIn(["easy", "medium", "hard"]),
   body("category").optional().isString().trim().notEmpty(),
   body("rewardXp").optional().isInt({ min: 1 }),
   body("isDaily").optional().isBoolean(),
@@ -47,7 +57,8 @@ r.put("/:id",
   updateQuest
 );
 
-r.delete("/:id",
+r.delete(
+  "/:id",
   param("id").isMongoId(),
   validate,
   deleteQuest

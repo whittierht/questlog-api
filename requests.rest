@@ -20,7 +20,7 @@ Content-Type: application/json
 }
 
 ###
-@id=68f2f3a658a70ec565eddbd5
+@id=68fc500c5c533d40f82d6999
 
 ###
 PUT http://localhost:3000/api/quests/{{id}}
@@ -31,7 +31,7 @@ Content-Type: application/json
   "description": "Keep those white and clean!",
   "difficulty": "easy",
   "category": "health",
-  "rewardXp": 100,
+  "rewardXp": 10,
   "isDaily": true,
   "dueDate": "2025-10-24T22:00:00.000Z"
 }
@@ -70,13 +70,13 @@ PUT https://questlog-api.onrender.com/api/quests/{{id}}
 Content-Type: application/json
 
 {
-  "title": "Morning Yoga",
-  "description": "Stretch for 20 minutes",
+  "title": "Brush Teeth",
+  "description": "Keep those white and clean!",
   "difficulty": "easy",
   "category": "health",
-  "rewardXp": 25,
+  "rewardXp": 100,
   "isDaily": true,
-  "dueDate": "2025-10-21T08:00:00.000Z"
+  "dueDate": "2025-10-24T22:00:00.000Z"
 }
 
 ###
