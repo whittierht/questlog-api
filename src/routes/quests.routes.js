@@ -7,34 +7,26 @@ import {
   updateQuest,
   deleteQuest
 } from "../controllers/quests.controller.js";
+import { requireAuth } from "../middleware/requireAuth.js";
 
 const r = Router();
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
   next();
 };
 
 /** #swagger.tags = ['Quests'] */
 
 r.get("/", listQuests);
+r.get("/:id", param("id").isMongoId(), validate, getQuestById);
 
-
-r.get(
-  "/:id",
-  param("id").isMongoId(),
-  validate,
-  getQuestById
-);
-
-r.post(
-  "/",
+r.post("/",
+  requireAuth,
   body("title").isString().trim().notEmpty(),
   body("description").isString().trim().notEmpty(),
-  body("difficulty").isIn(["easy", "medium", "hard"]),
+  body("difficulty").isIn(["easy","medium","hard"]),
   body("category").isString().trim().notEmpty(),
   body("rewardXp").isInt({ min: 1 }),
   body("isDaily").isBoolean(),
@@ -43,12 +35,12 @@ r.post(
   createQuest
 );
 
-r.put(
-  "/:id",
+r.put("/:id",
+  requireAuth,
   param("id").isMongoId(),
   body("title").optional().isString().trim().notEmpty(),
   body("description").optional().isString().trim().notEmpty(),
-  body("difficulty").optional().isIn(["easy", "medium", "hard"]),
+  body("difficulty").optional().isIn(["easy","medium","hard"]),
   body("category").optional().isString().trim().notEmpty(),
   body("rewardXp").optional().isInt({ min: 1 }),
   body("isDaily").optional().isBoolean(),
@@ -57,8 +49,8 @@ r.put(
   updateQuest
 );
 
-r.delete(
-  "/:id",
+r.delete("/:id",
+  requireAuth,
   param("id").isMongoId(),
   validate,
   deleteQuest

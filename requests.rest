@@ -31,7 +31,7 @@ Content-Type: application/json
   "description": "Keep those white and clean!",
   "difficulty": "easy",
   "category": "health",
-  "rewardXp": 10,
+  "rewardXp": 1000,
   "isDaily": true,
   "dueDate": "2025-10-24T22:00:00.000Z"
 }

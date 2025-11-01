@@ -37,6 +37,7 @@
       "post": {
         "tags": ["Quests"],
         "summary": "Create a new quest",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -89,6 +90,7 @@
       "put": {
         "tags": ["Quests"],
         "summary": "Update a quest by ID",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
@@ -124,6 +126,7 @@
       "delete": {
         "tags": ["Quests"],
         "summary": "Delete a quest by ID",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
@@ -154,6 +157,14 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Paste a valid Auth0 access token here (from your API’s Test tab)."
+      }
+    },
     "schemas": {
       "Quest": {
         "type": "object",
