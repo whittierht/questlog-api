@@ -3,20 +3,24 @@ import { getDb } from "../db.js";
 
 export async function listQuests(req, res, next) {
   try {
+    // If authenticated, return only the user's quests
+    const filter = req.auth ? { ownerId: req.auth.payload.sub } : {};
 
-    const filter = {};
     const quests = await getDb()
       .collection("quests")
       .find(filter)
       .sort({ createdAt: -1 })
       .toArray();
+
     res.json(quests);
-  } catch (e) { next(e); }
+  } catch (e) {
+    next(e);
+  }
 }
 
 export async function createQuest(req, res, next) {
   try {
-    const ownerId = req.auth?.payload?.sub || null; 
+    const ownerId = req.auth?.payload?.sub || null;
     const doc = {
       title: req.body.title,
       description: req.body.description,
@@ -29,9 +33,14 @@ export async function createQuest(req, res, next) {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    const result = await getDb().collection("quests").insertOne(doc);
-    res.status(201).json({ id: result.insertedId, ...doc });
-  } catch (e) { next(e); }
+
+    const { insertedId } = await getDb().collection("quests").insertOne(doc);
+
+    // ✅ return id AND _id so Swagger users can copy easily
+    res.status(201).json({ _id: insertedId, id: insertedId, ...doc });
+  } catch (e) {
+    next(e);
+  }
 }
 
 export async function getQuestById(req, res, next) {
@@ -40,24 +49,39 @@ export async function getQuestById(req, res, next) {
     const quest = await getDb().collection("quests").findOne({ _id });
     if (!quest) return res.status(404).json({ message: "Not found" });
     res.json(quest);
-  } catch (e) { next(e); }
+  } catch (e) {
+    next(e);
+  }
 }
 
 export async function updateQuest(req, res, next) {
   try {
     const { id } = req.params;
-    if (!ObjectId.isValid(id)) return res.status(400).json({ message: "Invalid id format" });
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid id format" });
+    }
 
     const _id = new ObjectId(id);
     const ownerId = req.auth?.payload?.sub;
 
-    const allowed = ["title","description","difficulty","category","rewardXp","isDaily","dueDate"];
+    const allowed = [
+      "title",
+      "description",
+      "difficulty",
+      "category",
+      "rewardXp",
+      "isDaily",
+      "dueDate"
+    ];
+
     const payload = {};
     for (const k of allowed) if (k in req.body) payload[k] = req.body[k];
-    if ("dueDate" in payload) payload.dueDate = payload.dueDate ? new Date(payload.dueDate) : null;
+    if ("dueDate" in payload) {
+      payload.dueDate = payload.dueDate ? new Date(payload.dueDate) : null;
+    }
 
     const result = await getDb().collection("quests").findOneAndUpdate(
-      { _id, ownerId },
+      { _id, ownerId }, // ✅ ownership enforced
       { $set: { ...payload, updatedAt: new Date() } },
       { returnDocument: "after" }
     );
@@ -75,8 +99,13 @@ export async function deleteQuest(req, res, next) {
     const _id = new ObjectId(req.params.id);
     const ownerId = req.auth?.payload?.sub;
 
-    const { deletedCount } = await getDb().collection("quests").deleteOne({ _id, ownerId });
+    const { deletedCount } = await getDb()
+      .collection("quests")
+      .deleteOne({ _id, ownerId }); // ✅ ownership enforced
+
     if (!deletedCount) return res.status(404).json({ message: "Not found" });
     res.json({ deleted: true });
-  } catch (e) { next(e); }
+  } catch (e) {
+    next(e);
+  }
 }
