@@ -3,7 +3,7 @@ import { getDb } from "../db.js";
 
 export async function listQuests(req, res, next) {
   try {
-    // If authenticated, return only the user's quests
+
     const filter = req.auth ? { ownerId: req.auth.payload.sub } : {};
 
     const quests = await getDb()
@@ -36,7 +36,7 @@ export async function createQuest(req, res, next) {
 
     const { insertedId } = await getDb().collection("quests").insertOne(doc);
 
-    // ✅ return id AND _id so Swagger users can copy easily
+   
     res.status(201).json({ _id: insertedId, id: insertedId, ...doc });
   } catch (e) {
     next(e);
@@ -81,7 +81,7 @@ export async function updateQuest(req, res, next) {
     }
 
     const result = await getDb().collection("quests").findOneAndUpdate(
-      { _id, ownerId }, // ✅ ownership enforced
+      { _id, ownerId }, 
       { $set: { ...payload, updatedAt: new Date() } },
       { returnDocument: "after" }
     );
@@ -101,7 +101,7 @@ export async function deleteQuest(req, res, next) {
 
     const { deletedCount } = await getDb()
       .collection("quests")
-      .deleteOne({ _id, ownerId }); // ✅ ownership enforced
+      .deleteOne({ _id, ownerId }); 
 
     if (!deletedCount) return res.status(404).json({ message: "Not found" });
     res.json({ deleted: true });
