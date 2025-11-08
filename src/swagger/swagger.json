@@ -6,7 +6,7 @@
     "description": "Manage quests and user profiles. Click **Authorize** and paste a valid JWT before calling protected endpoints."
   },
   "servers": [
-    { "url": "https://<YOUR-RENDER-HOST>/api" },
+    { "url": "https://questlog-api.onrender.com/api" },
     { "url": "http://localhost:3000/api" }
   ],
   "tags": [
