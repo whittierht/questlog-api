@@ -2,13 +2,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
-import fs from "fs";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 import { connectDb } from "./db.js";
-import questsRouter from "./quests.routes.js";
-import usersRouter from "./users.routes.js";
+import questsRouter from "./routes/quests.routes.js";
+import usersRouter from "./routes/users.routes.js";
 
 dotenv.config();
 
@@ -20,23 +20,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-const swaggerPath = path.join(__dirname, "swagger.json");
+const swaggerPath = path.join(__dirname, "swagger", "swagger.json");
 const swaggerDoc = JSON.parse(fs.readFileSync(swaggerPath, "utf8"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
-
 app.get("/health", (req, res) => res.json({ ok: true }));
-
 
 app.use("/api/quests", questsRouter);
 app.use("/api/users", usersRouter);
 
-
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
 });
-
 
 app.use((err, req, res, next) => {
   console.error(err);
