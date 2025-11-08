@@ -7,6 +7,7 @@ GET http://localhost:3000/api/quests/{{id}}
 
 ###
 POST http://localhost:3000/api/quests
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -20,10 +21,12 @@ Content-Type: application/json
 }
 
 ###
-@id=68fc500c5c533d40f82d6999
+@id = 68fc500c5c533d40f82d6999
+@token = <JWT>
 
 ###
 PUT http://localhost:3000/api/quests/{{id}}
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -36,10 +39,28 @@ Content-Type: application/json
   "dueDate": "2025-10-24T22:00:00.000Z"
 }
 
-
 ###
 DELETE http://localhost:3000/api/quests/{{id}}
+Authorization: Bearer {{token}}
 
+###
+GET http://localhost:3000/api/users/me
+Authorization: Bearer {{token}}
+
+###
+PUT http://localhost:3000/api/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "displayName": "Hyrum",
+  "settings": { "theme": "dark" },
+  "xp": 120,
+  "level": 3
+}
+
+###
+GET http://localhost:3000/api/users/leaderboard
 ###
 GET http://localhost:3000/api-docs/
 
@@ -53,6 +74,7 @@ GET https://questlog-api.onrender.com/api/quests/{{id}}
 
 ###
 POST https://questlog-api.onrender.com/api/quests
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -67,6 +89,7 @@ Content-Type: application/json
 
 ###
 PUT https://questlog-api.onrender.com/api/quests/{{id}}
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -81,10 +104,37 @@ Content-Type: application/json
 
 ###
 DELETE https://questlog-api.onrender.com/api/quests/{{id}}
+Authorization: Bearer {{token}}
 
+###
+GET https://questlog-api.onrender.com/api/users/me
+Authorization: Bearer {{token}}
+
+###
+PUT https://questlog-api.onrender.com/api/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "displayName": "Hyrum",
+  "settings": { "theme": "dark" },
+  "xp": 120,
+  "level": 3
+}
+
+###
+GET https://questlog-api.onrender.com/api/users/leaderboard
 ###
 GET https://questlog-api.onrender.com/api-docs/
 
-###node src/index.js
 
+### Get Auth0 API Token
+POST https://dev-yzdx6qc44dbnutbo.us.auth0.com/oauth/token
+Content-Type: application/json
 
+{
+  "client_id": "UlKw5Z9ylEU2a1JO59Acu4SrTqeGVpbi",
+  "client_secret": "",
+  "audience": "https://questlog-api",
+  "grant_type": "client_credentials"
+}
