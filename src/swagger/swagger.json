@@ -2,41 +2,32 @@
   "openapi": "3.0.0",
   "info": {
     "title": "QuestLog API",
-    "version": "1.1.0",
-    "description": "A RESTful API for managing quests using Node.js, Express, and MongoDB."
+    "version": "1.2.0",
+    "description": "Manage quests and user profiles. Click **Authorize** and paste a valid JWT before calling protected endpoints."
   },
   "servers": [
-    { "url": "https://questlog-api.onrender.com/api" },
+    { "url": "https://<YOUR-RENDER-HOST>/api" },
     { "url": "http://localhost:3000/api" }
   ],
   "tags": [
-    {
-      "name": "Quests",
-      "description": "Endpoints for creating, reading, updating, and deleting quests."
-    }
+    { "name": "Quests", "description": "Create, read, update, delete quests" },
+    { "name": "Users", "description": "User profile and leaderboard" }
   ],
   "paths": {
     "/quests": {
       "get": {
         "tags": ["Quests"],
-        "summary": "List all quests",
+        "summary": "List quests",
         "responses": {
           "200": {
-            "description": "List of all quests",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/Quest" }
-                }
-              }
-            }
+            "description": "Array of quests",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Quest" } } } }
           }
         }
       },
       "post": {
         "tags": ["Quests"],
-        "summary": "Create a new quest",
+        "summary": "Create a quest",
         "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
@@ -45,72 +36,10 @@
               "schema": { "$ref": "#/components/schemas/QuestCreate" },
               "example": {
                 "title": "Run 3 miles",
-                "description": "Evening run at the track",
+                "description": "Evening run",
                 "difficulty": "medium",
                 "category": "health",
                 "rewardXp": 50,
-                "isDaily": true,
-                "dueDate": "2025-10-20T18:00:00.000Z"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": { "description": "Quest created successfully" },
-          "400": { "description": "Validation error" }
-        }
-      }
-    },
-    "/quests/{id}": {
-      "get": {
-        "tags": ["Quests"],
-        "summary": "Retrieve a quest by ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "The ID of the quest to retrieve"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Quest found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Quest" }
-              }
-            }
-          },
-          "400": { "description": "Invalid ID format" },
-          "404": { "description": "Quest not found" }
-        }
-      },
-      "put": {
-        "tags": ["Quests"],
-        "summary": "Update a quest by ID",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "The ID of the quest to update"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/QuestUpdate" },
-              "example": {
-                "title": "Morning Yoga",
-                "description": "Stretch for 20 minutes",
-                "difficulty": "easy",
-                "category": "health",
-                "rewardXp": 25,
                 "isDaily": true,
                 "dueDate": "2025-10-21T08:00:00.000Z"
               }
@@ -118,52 +47,105 @@
           }
         },
         "responses": {
-          "200": { "description": "Quest updated successfully" },
+          "201": { "description": "Created" },
           "400": { "description": "Validation error" },
-          "404": { "description": "Quest not found" }
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/quests/{id}": {
+      "get": {
+        "tags": ["Quests"],
+        "summary": "Get quest by ID",
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Quest", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Quest" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "tags": ["Quests"],
+        "summary": "Update a quest",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QuestUpdate" },
+              "example": {
+                "title": "Morning Yoga",
+                "rewardXp": 25,
+                "isDaily": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Not found" }
         }
       },
       "delete": {
         "tags": ["Quests"],
-        "summary": "Delete a quest by ID",
+        "summary": "Delete a quest",
         "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "The ID of the quest to delete"
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Deleted" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get current user (creates one if missing)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Current user profile" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update current user",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserUpdate" },
+              "example": { "displayName": "Hyrum", "settings": { "theme": "dark" }, "xp": 120, "level": 3 }
+            }
           }
-        ],
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/users/leaderboard": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Leaderboard (public)",
         "responses": {
           "200": {
-            "description": "Quest deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "deleted": { "type": "boolean", "example": true }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "description": "Invalid ID format" },
-          "404": { "description": "Quest not found" }
+            "description": "Top users",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/LeaderboardItem" } } } }
+          }
         }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "Paste a valid Auth0 access token here (from your API’s Test tab)."
-      }
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
     },
     "schemas": {
       "Quest": {
@@ -172,35 +154,23 @@
           "_id": { "type": "string" },
           "title": { "type": "string" },
           "description": { "type": "string" },
-          "difficulty": {
-            "type": "string",
-            "enum": ["easy", "medium", "hard"]
-          },
+          "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
           "category": { "type": "string" },
-          "rewardXp": { "type": "integer" },
+          "rewardXp": { "type": "integer", "minimum": 1 },
           "isDaily": { "type": "boolean" },
           "dueDate": { "type": "string", "format": "date-time" },
+          "ownerId": { "type": "string" },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
       },
       "QuestCreate": {
         "type": "object",
-        "required": [
-          "title",
-          "description",
-          "difficulty",
-          "category",
-          "rewardXp",
-          "isDaily"
-        ],
+        "required": ["title", "description", "difficulty", "category", "rewardXp", "isDaily"],
         "properties": {
           "title": { "type": "string" },
           "description": { "type": "string" },
-          "difficulty": {
-            "type": "string",
-            "enum": ["easy", "medium", "hard"]
-          },
+          "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
           "category": { "type": "string" },
           "rewardXp": { "type": "integer", "minimum": 1 },
           "isDaily": { "type": "boolean" },
@@ -212,14 +182,29 @@
         "properties": {
           "title": { "type": "string" },
           "description": { "type": "string" },
-          "difficulty": {
-            "type": "string",
-            "enum": ["easy", "medium", "hard"]
-          },
+          "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
           "category": { "type": "string" },
-          "rewardXp": { "type": "integer" },
+          "rewardXp": { "type": "integer", "minimum": 1 },
           "isDaily": { "type": "boolean" },
           "dueDate": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "displayName": { "type": "string" },
+          "settings": { "type": "object" },
+          "xp": { "type": "integer", "minimum": 0 },
+          "level": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "LeaderboardItem": {
+        "type": "object",
+        "properties": {
+          "sub": { "type": "string" },
+          "displayName": { "type": "string" },
+          "xp": { "type": "integer" },
+          "level": { "type": "integer" }
         }
       }
     }

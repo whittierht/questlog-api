@@ -5,37 +5,57 @@ import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import { connectDb } from "./db.js";
-import api from "./routes/index.js";
+import questsRouter from "./quests.routes.js";
+import usersRouter from "./users.routes.js";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const swaggerPath = path.join(__dirname, "./swagger/swagger.json");
-const swaggerDoc = JSON.parse(fs.readFileSync(swaggerPath, "utf-8"));
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (_, res) => res.send("QuestLog API running"));
 
+const swaggerPath = path.join(__dirname, "swagger.json");
+const swaggerDoc = JSON.parse(fs.readFileSync(swaggerPath, "utf8"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 
-app.use("/api", api);
+app.get("/health", (req, res) => res.json({ ok: true }));
+
+
+app.use("/api/quests", questsRouter);
+app.use("/api/users", usersRouter);
+
+
+app.use((req, res) => {
+  res.status(404).json({ message: "Not found" });
+});
+
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  const status = Number(err.status) || 500;
+  res.status(status).json({ message: err.message || "Server error" });
+});
 
 const PORT = process.env.PORT || 3000;
-const start = async () => {
-  try {
-    await connectDb();
-    app.listen(PORT, () =>
-      console.log(`Server running at: http://localhost:${PORT}`)
-    );
-  } catch (err) {
-    console.error("Error starting server:", err);
-  }
-};
 
-start();
+connectDb()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`API listening on ${PORT}`);
+      console.log(`Swagger at /api-docs`);
+    });
+  })
+  .catch((e) => {
+    console.error("Failed to start server:", e);
+    process.exit(1);
+  });
+
+export default app;
